@@ -1,0 +1,16 @@
+#usda 1.0
+(
+    defaultPrim = "装配"
+)
+def Xform "装配" (
+    displayName = "总装 零件"
+    customData = { string 原名 = "设计零件" }
+)
+{
+    custom string 说明 = "中文描述"
+    custom token[] 标签 = ["钢材", "机械"]
+    rel target = </装配/螺栓>
+    def Xform "螺栓" {
+        double3 xformOp:translate = (1, 2, 3)
+    }
+}

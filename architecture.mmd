@@ -1,0 +1,15 @@
+flowchart TD
+    A["USD 工程目录"] --> B["CLI 扫描<br/>检查环境 · 识别文件格式"]
+    B --> C["读取文字<br/>USDA 直接读取 · USDC 经 SDK 导出"]
+    C --> D{"编码检查"}
+    D -->|"UTF-8 正常"| E["保持原样"]
+    D -->|"可确认的 GB 编码"| F["转为 UTF-8<br/>含字符串转义字节修复"]
+    D -->|"有歧义或已损坏"| G["保留原文件<br/>列入人工处理报告"]
+    F --> H{"OpenUSD 验证"}
+    H -->|"通过"| I["写入修复内容<br/>USDC 重新封装"]
+    H -->|"失败"| G
+    E --> J["输出工程副本＋报告<br/>保留文件名与目录结构"]
+    I --> J
+    G --> J
+    J -.->|"可选：提供中文名称映射"| K["生成 displayName 覆盖层<br/>保持 Prim 路径不变"]
+    K --> L["Isaac Sim / Omniverse Stage<br/>启用中文字体＋Show Display Names"]

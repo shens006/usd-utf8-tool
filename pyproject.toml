@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "usd-utf8-tool"
+version = "0.2.0"
+description = "Scan and repair GB-encoded USD projects while preserving original files"
+readme = "README.md"
+requires-python = ">=3.10,<3.15"
+dependencies = ["usd-core>=24.3"]
+
+[project.scripts]
+usd-utf8 = "usd_cli:main"
+
+[tool.setuptools]
+py-modules = ["usd_utf8", "usd_scan", "usd_env", "usd_cli"]

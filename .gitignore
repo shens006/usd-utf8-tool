@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+build/
+dist/
+.DS_Store
+validation.json
+*.egg-info/
+*.utf8.usd
+*.utf8.usda
+*.utf8.usdc
+!examples/assembly.utf8.usda

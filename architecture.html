@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USD 中文修复工具：流程架构</title>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: #ffffff; padding: 28px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; display: flex; justify-content: center; }
+  #wrap { width: 100%; max-width: 1100px; }
+  #chart { display: flex; justify-content: center; }
+  .mermaid { width: 100%; }
+  .err { color: #c00; font-family: monospace; white-space: pre-wrap; padding: 16px; border: 1px solid #f99; background: #fff5f5; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="chart" class="mermaid">flowchart TD
+    A["USD 工程目录"] --&gt; B["CLI 扫描&lt;br/&gt;检查环境 · 识别文件格式"]
+    B --&gt; C["读取文字&lt;br/&gt;USDA 直接读取 · USDC 经 SDK 导出"]
+    C --&gt; D{"编码检查"}
+    D --&gt;|"UTF-8 正常"| E["保持原样"]
+    D --&gt;|"可确认的 GB 编码"| F["转为 UTF-8&lt;br/&gt;含字符串转义字节修复"]
+    D --&gt;|"有歧义或已损坏"| G["保留原文件&lt;br/&gt;列入人工处理报告"]
+    F --&gt; H{"OpenUSD 验证"}
+    H --&gt;|"通过"| I["写入修复内容&lt;br/&gt;USDC 重新封装"]
+    H --&gt;|"失败"| G
+    E --&gt; J["输出工程副本＋报告&lt;br/&gt;保留文件名与目录结构"]
+    I --&gt; J
+    G --&gt; J
+    J -.-&gt;|"可选：提供中文名称映射"| K["生成 displayName 覆盖层&lt;br/&gt;保持 Prim 路径不变"]
+    K --&gt; L["Isaac Sim / Omniverse Stage&lt;br/&gt;启用中文字体＋Show Display Names"]</div>
+</div>
+<script src="./mermaid.min.js"></script>
+<script>
+  var MERMAID_INIT = {"startOnLoad": false, "securityLevel": "loose", "theme": "base", "themeVariables": {"primaryColor": "#ffffff", "primaryTextColor": "#37352f", "primaryBorderColor": "#e0e0e0", "lineColor": "#9b9a97", "secondaryColor": "#f7f6f3", "tertiaryColor": "#ffffff", "fontFamily": "Inter, sans-serif", "fontSize": "14px"}, "themeCSS": ".node rect, .node circle, .node polygon { stroke-width: 1.5px; rx: 4px; ry: 4px; } .edgePath .path { stroke-width: 1.5px; }"};
+  if ("") { MERMAID_INIT.look = ""; }
+  mermaid.initialize(MERMAID_INIT);
+  var renderDone = mermaid.run().catch(function(e){
+    var c = document.getElementById("chart");
+    c.outerHTML = '<div class="err">Mermaid 渲染失败:\n' + String(e).replace(/</g,'&lt;') + '</div>';
+  });
+  renderDone.then(function(){
+    if ("0" === "1") { applyGradient(); }
+  });
+  function applyGradient(){
+    var colors=[["#ff9a9e","#fecfef"],["#a18cd1","#fbc2eb"],["#84fab0","#8fd3f4"],["#ffecd2","#fcb69f"],["#a1c4fd","#c2e9fb"],["#fbc2eb","#a6c1ee"]];
+    var svg=document.querySelector('#chart svg'); if(!svg) return;
+    var defs=svg.querySelector('defs'); if(!defs){ defs=document.createElementNS('http://www.w3.org/2000/svg','defs'); svg.prepend(defs); }
+    var nodes=svg.querySelectorAll('.node');
+    nodes.forEach(function(n,i){
+      var c1=colors[i%colors.length][0], c2=colors[i%colors.length][1];
+      var id='grad'+i;
+      var lg=document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+      lg.id=id; lg.setAttribute('x1','0'); lg.setAttribute('y1','0'); lg.setAttribute('x2','1'); lg.setAttribute('y2','1');
+      var s1=document.createElementNS('http://www.w3.org/2000/svg','stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color',c1);
+      var s2=document.createElementNS('http://www.w3.org/2000/svg','stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color',c2);
+      lg.appendChild(s1); lg.appendChild(s2); defs.appendChild(lg);
+      n.querySelectorAll('rect,circle,polygon,path').forEach(function(el){ el.setAttribute('fill','url(#'+id+')'); });
+    });
+  }
+</script>
+</body>
+</html>
